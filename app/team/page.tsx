@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar"
 import { DarkModeToggle } from "@/components/layout/DarkModeToggle"
 import { UserEditPopup } from "@/components/team/UserEditPopup"
 import { useTasks } from "@/hooks/useTasks"
+import { useAssignees } from "@/hooks/useAssignees"
 import { assignees as initialAssignees } from "@/data/tasks"
 import type { Assignee } from "@/types/task"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -16,11 +17,10 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export default function TeamPage() {
-  const { tasks, isLoading } = useTasks()
+  const { tasks, isLoading: isTasksLoading } = useTasks()
+  const { assignees: users, addAssignee, updateAssignee, isLoading: isAssigneesLoading } = useAssignees()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  
-  const [users, setUsers] = useState<Assignee[]>(initialAssignees)
   
   const [selectedUser, setSelectedUser] = useState<Assignee | null>(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
@@ -63,15 +63,15 @@ export default function TeamPage() {
 
   const handleSaveUser = (updatedUser: Assignee) => {
     if (popupMode === "create") {
-      setUsers(prev => [updatedUser, ...prev])
+      addAssignee(updatedUser)
       toast.success("Team member added successfully!")
     } else {
-      setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u))
+      updateAssignee(updatedUser)
       toast.success("Team member updated successfully!")
     }
   }
 
-  if (isLoading) {
+  if (isTasksLoading || isAssigneesLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
