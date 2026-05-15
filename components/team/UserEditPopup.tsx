@@ -16,36 +16,45 @@ import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface UserEditPopupProps {
-  user: Assignee | null
+  user?: Assignee | null
   isOpen: boolean
   onClose: () => void
   onSave: (user: Assignee) => void
+  mode?: "edit" | "create"
 }
 
-export function UserEditPopup({ user, isOpen, onClose, onSave }: UserEditPopupProps) {
+export function UserEditPopup({ user, isOpen, onClose, onSave, mode = "edit" }: UserEditPopupProps) {
   const [formData, setFormData] = useState<Partial<Assignee>>({})
 
   useEffect(() => {
-    if (user && isOpen) {
-      setFormData(user)
+    if (isOpen) {
+      if (mode === "edit" && user) {
+        setFormData(user)
+      } else if (mode === "create") {
+        setFormData({ id: Math.random().toString(36).substring(2, 9) })
+      }
+    } else {
+      // Reset form when closing to prevent flash of old data on next open
+      setTimeout(() => setFormData({}), 200)
     }
-  }, [user, isOpen])
+  }, [user, isOpen, mode])
 
   const handleSave = () => {
-    if (!formData.name || !formData.id) return
+    if (!formData.name) return
     onSave(formData as Assignee)
     onClose()
   }
 
-  if (!user) return null
+  const title = mode === "create" ? "Add Team Member" : "Edit Team Member"
+  const description = mode === "create" ? "Enter the details of the new team member." : "Update the profile details of this team member."
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Team Member</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription className="sr-only">
-            Update the profile details of this team member.
+            {description}
           </DialogDescription>
         </DialogHeader>
 

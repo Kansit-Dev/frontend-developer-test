@@ -10,7 +10,7 @@ import type { Assignee, Task } from "@/types/task"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Menu, Mail, Briefcase, CheckCircle2, Clock, CircleDashed } from "lucide-react"
+import { Menu, Mail, Briefcase, CheckCircle2, Clock, CircleDashed, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -23,6 +23,7 @@ export default function TeamPage() {
   
   const [selectedUser, setSelectedUser] = useState<Assignee | null>(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
+  const [popupMode, setPopupMode] = useState<"edit" | "create">("edit")
 
   // Calculate workload for each user
   const userWorkload = useMemo(() => {
@@ -49,12 +50,24 @@ export default function TeamPage() {
 
   const handleEditUser = (user: Assignee) => {
     setSelectedUser(user)
+    setPopupMode("edit")
+    setIsPopupOpen(true)
+  }
+
+  const handleAddUser = () => {
+    setSelectedUser(null)
+    setPopupMode("create")
     setIsPopupOpen(true)
   }
 
   const handleSaveUser = (updatedUser: Assignee) => {
-    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u))
-    toast.success("Team member updated successfully!")
+    if (popupMode === "create") {
+      setUsers(prev => [updatedUser, ...prev])
+      toast.success("Team member added successfully!")
+    } else {
+      setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u))
+      toast.success("Team member updated successfully!")
+    }
   }
 
   return (
@@ -107,6 +120,10 @@ export default function TeamPage() {
             </div>
             <div className="flex items-center gap-2">
               <DarkModeToggle />
+              <Button onClick={handleAddUser}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Member
+              </Button>
             </div>
           </div>
 
@@ -177,6 +194,7 @@ export default function TeamPage() {
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
         onSave={handleSaveUser}
+        mode={popupMode}
       />
     </div>
   )
