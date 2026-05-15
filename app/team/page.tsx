@@ -5,8 +5,9 @@ import { Toaster, toast } from "react-hot-toast"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { DarkModeToggle } from "@/components/layout/DarkModeToggle"
 import { UserEditPopup } from "@/components/team/UserEditPopup"
-import { assignees as initialAssignees, mockTasks } from "@/data/tasks"
-import type { Assignee, Task } from "@/types/task"
+import { useTasks } from "@/hooks/useTasks"
+import { assignees as initialAssignees } from "@/data/tasks"
+import type { Assignee } from "@/types/task"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -15,17 +16,17 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export default function TeamPage() {
+  const { tasks, isLoading } = useTasks()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   const [users, setUsers] = useState<Assignee[]>(initialAssignees)
-  const [tasks] = useState<Task[]>(mockTasks) // In a real app, this would be fetched
   
   const [selectedUser, setSelectedUser] = useState<Assignee | null>(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupMode, setPopupMode] = useState<"edit" | "create">("edit")
 
-  // Calculate workload for each user
+  // Calculate workload for each user based on real tasks
   const userWorkload = useMemo(() => {
     const workload: Record<string, { todo: number; inProgress: number; done: number; total: number }> = {}
     
@@ -68,6 +69,14 @@ export default function TeamPage() {
       setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u))
       toast.success("Team member updated successfully!")
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    )
   }
 
   return (
