@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -144,6 +145,9 @@ export function TaskDetailPopup({
           <DialogTitle>
             {mode === "create" ? "Create New Task" : mode === "edit" ? "Edit Task" : "Task Details"}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {mode === "create" ? "Enter the details for the new task." : mode === "edit" ? "Modify the details of this task." : "View the details of this task."}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
