@@ -134,12 +134,38 @@ export default function ChartPage() {
     
     setIsExporting(true)
     
+    // Save current view state
+    const savedVisibleLines = { ...visibleLines }
+    const originalStyle = chartRef.current.style.cssText
+    
     try {
+      // 1. Force all lines to be visible for the export report
+      setVisibleLines({ green: true, orange: true, blue: true })
+      
+      // 2. Temporarily force FHD 16:9 aspect ratio for the container
+      // Using fixed positioning and negative left to avoid UI flicker while maintaining renderability
+      chartRef.current.style.width = '1920px'
+      chartRef.current.style.height = '1080px'
+      chartRef.current.style.position = 'fixed'
+      chartRef.current.style.left = '-10000px'
+      chartRef.current.style.top = '0'
+      chartRef.current.style.zIndex = '-9999'
+      
+      // 3. Wait for Recharts to re-render to the new size and finish animations
+      // Using 1.5s to ensure full layout stabilization and animation completion
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // 4. Capture at FHD resolution
       const dataUrl = await toPng(chartRef.current, {
         cacheBust: true,
         backgroundColor: "#ffffff",
-        pixelRatio: 2,
+        width: 1920,
+        height: 1080,
       })
+      
+      // Restore original style and state immediately
+      chartRef.current.style.cssText = originalStyle
+      setVisibleLines(savedVisibleLines)
       
       const pdf = new jsPDF({
         orientation: "landscape",
@@ -150,27 +176,43 @@ export default function ChartPage() {
       const pdfWidth = pdf.internal.pageSize.getWidth()
       const pdfHeight = pdf.internal.pageSize.getHeight()
       
-      // Add title
-      pdf.setFontSize(16)
-      pdf.text("Daily Analytics Chart", 14, 15)
-      pdf.setFontSize(10)
-      pdf.text(`Generated: ${new Date().toLocaleString()}`, 14, 22)
+      // PDF Layout (A4 Landscape: 297x210mm)
+      const margin = 10
+      const imgWidth = pdfWidth - (margin * 2)
+      const imgHeight = (imgWidth * 9) / 16 // Strict 16:9 Aspect Ratio
       
-      // Calculate image dimensions
-      const imgWidth = pdfWidth - 28
-      const imgHeight = (pdfHeight - 40) * 0.8
-      const imgX = 14
-      const imgY = 30
+      const x = margin
+      const y = (pdfHeight - imgHeight) / 2 // Center vertically
       
-      pdf.addImage(dataUrl, "PNG", imgX, imgY, imgWidth, imgHeight)
-      pdf.save("daily-chart.pdf")
+      // Header Info
+      pdf.setFontSize(18)
+      pdf.setTextColor(30, 30, 30)
+      pdf.text("Daily Performance Analytics", margin, 15)
+      
+      pdf.setFontSize(9)
+      pdf.setTextColor(100, 100, 100)
+      pdf.text(`Exported: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, margin, 21)
+      pdf.text(`Format: 16:9 FHD (1920x1080 px)`, margin, 26)
+      
+      // Add the chart image
+      pdf.addImage(dataUrl, "PNG", x, y, imgWidth, imgHeight)
+      
+      // Footer
+      pdf.setFontSize(8)
+      pdf.text("TaskFlow Analytics Engine - System Generated Report", pdfWidth / 2, pdfHeight - 10, { align: "center" })
+      
+      pdf.save(`analytics-fhd-report.pdf`)
+      
     } catch (error) {
       console.error("Error exporting PDF:", error)
-      alert("Failed to export PDF. Please try again.")
+      alert("Export failed. Please check console for details.")
+      // Restore on error too
+      chartRef.current.style.cssText = originalStyle
+      setVisibleLines(savedVisibleLines)
     } finally {
       setIsExporting(false)
     }
-  }, [])
+  }, [visibleLines])
 
   return (
     <div className="min-h-screen bg-background">
@@ -260,7 +302,7 @@ export default function ChartPage() {
                       tick={{ fontSize: 10, fill: "#f97316", fontWeight: 500 }}
                       axisLine={{ stroke: "#f97316", strokeWidth: 1.5 }}
                       tickLine={{ stroke: "#f97316" }}
-                      width={38}
+                      width={45}
                     />
                     
                     {/* Green Y-Axis: 0-100 (Left - Second/Middle) */}
@@ -272,7 +314,7 @@ export default function ChartPage() {
                       tick={{ fontSize: 10, fill: "#22c55e", fontWeight: 500 }}
                       axisLine={{ stroke: "#22c55e", strokeWidth: 1.5 }}
                       tickLine={{ stroke: "#22c55e" }}
-                      width={32}
+                      width={45}
                     />
                     
                     {/* Blue Y-Axis: 0-10 (Left - Third/Innermost) */}
@@ -284,7 +326,7 @@ export default function ChartPage() {
                       tick={{ fontSize: 10, fill: "#3b82f6", fontWeight: 500 }}
                       axisLine={{ stroke: "#3b82f6", strokeWidth: 1.5 }}
                       tickLine={{ stroke: "#3b82f6" }}
-                      width={28}
+                      width={45}
                     />
 
                     {/* Reference line at 0 for orange axis */}
