@@ -31,12 +31,12 @@ interface SidebarProps {
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/chart", label: "Analytics", icon: BarChart3 },
-  { href: "#", label: "Projects", icon: FolderKanban },
+  { href: "/projects", label: "Projects", icon: FolderKanban },
   { href: "/team", label: "Team", icon: Users },
 ]
 
 const bottomNavItems = [
-  { href: "#", label: "Settings", icon: Settings },
+  { href: "/settings", label: "Settings", icon: Settings },
 ]
 
 export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
