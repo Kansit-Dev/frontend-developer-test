@@ -8,13 +8,13 @@ import { SearchFilterBar } from "@/components/dashboard/SearchFilterBar"
 import { TaskBoard } from "@/components/dashboard/TaskBoard"
 import { TaskDetailPopup } from "@/components/dashboard/TaskDetailPopup"
 import { Button } from "@/components/ui/button"
-import { mockTasks } from "@/data/tasks"
+import { useTasks } from "@/hooks/useTasks"
 import type { Task, Priority, Status } from "@/types/task"
 import { Plus, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function DashboardPage() {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks)
+  const { tasks, createTask, updateTask, moveTask, isLoading } = useTasks()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
@@ -94,28 +94,25 @@ export default function DashboardPage() {
     }
     
     if (popupMode === "create") {
-      setTasks((prev) => [task, ...prev])
+      createTask(task)
       toast.success("Task created successfully!")
     } else {
-      setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)))
+      updateTask(task)
       toast.success("Task updated successfully!")
     }
   }
 
   const handleTaskMove = (taskId: string, newStatus: Status) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              status: newStatus,
-              progress: newStatus === "done" ? 100 : newStatus === "todo" ? 0 : task.progress,
-              updatedAt: new Date().toISOString(),
-            }
-          : task
-      )
-    )
+    moveTask(taskId, newStatus)
     toast.success(`Task moved to ${newStatus === "todo" ? "To Do" : newStatus === "in-progress" ? "In Progress" : "Done"}`)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    )
   }
 
   return (
