@@ -206,7 +206,7 @@ export default function ChartPage() {
       <main
         className={cn(
           "min-h-screen transition-all duration-300",
-          isCollapsed ? "md:ml-16" : "md:ml-64"
+          isCollapsed ? "md:ml-[72px]" : "md:ml-64"
         )}
       >
         <div className="p-4 md:p-6 lg:p-8">

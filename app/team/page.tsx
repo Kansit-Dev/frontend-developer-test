@@ -58,51 +58,57 @@ export default function TeamPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <Toaster position="top-right" />
       
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 z-30 bg-background/80 backdrop-blur-sm lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
+      {/* Mobile Menu Button */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="fixed left-4 top-4 z-50 md:hidden"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        <Menu className="h-4 w-4" />
+      </Button>
 
-      {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 lg:relative lg:translate-x-0",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <Sidebar 
-          isCollapsed={isCollapsed} 
-          onToggle={() => setIsCollapsed(!isCollapsed)} 
-        />
+      {/* Sidebar - Desktop */}
+      <div className="hidden md:block">
+        <Sidebar isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(!isCollapsed)} />
       </div>
 
+      {/* Sidebar - Mobile */}
+      {isMobileMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-30 bg-black/50 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="fixed left-0 top-0 z-40 md:hidden">
+            <Sidebar isCollapsed={false} onToggle={() => setIsMobileMenuOpen(false)} />
+          </div>
+        </>
+      )}
+
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="container mx-auto p-4 md:p-8 lg:p-12">
+      <main
+        className={cn(
+          "min-h-screen transition-all duration-300",
+          isCollapsed ? "md:ml-[72px]" : "md:ml-64"
+        )}
+      >
+        <div className="p-4 md:p-6 lg:p-8">
           {/* Header */}
-          <header className="mb-8 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden"
-                onClick={() => setIsMobileMenuOpen(true)}
-              >
-                <Menu className="h-6 w-6" />
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Team Members</h1>
-                <p className="text-muted-foreground mt-1">Manage users, roles, and review individual workloads.</p>
-              </div>
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="ml-12 md:ml-0">
+              <h1 className="text-2xl font-bold text-foreground">Team Members</h1>
+              <p className="text-sm text-muted-foreground">
+                Manage users, roles, and review individual workloads.
+              </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <DarkModeToggle />
             </div>
-          </header>
+          </div>
 
           {/* Users Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
