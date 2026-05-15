@@ -356,25 +356,12 @@ export function TaskDetailPopup({
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          {isViewMode ? (
-            <>
-              <Button variant="outline" onClick={onClose}>
-                Close
-              </Button>
-              <Button onClick={() => onSave({ ...formData as Task, _switchToEdit: true } as Task)}>
-                Edit Task
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button onClick={handleSave}>
-                {mode === "create" ? "Create Task" : "Save Changes"}
-              </Button>
-            </>
-          )}
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button onClick={handleSave} disabled={!formData.title?.trim()}>
+            {mode === "create" ? "Save" : "Update"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

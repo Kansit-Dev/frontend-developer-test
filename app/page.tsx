@@ -76,7 +76,7 @@ export default function DashboardPage() {
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task)
-    setPopupMode("view")
+    setPopupMode("edit")
     setIsPopupOpen(true)
   }
 
