@@ -25,7 +25,7 @@ const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/chart", label: "Analytics", icon: BarChart3 },
   { href: "#", label: "Projects", icon: FolderKanban },
-  { href: "#", label: "Team", icon: Users },
+  { href: "/team", label: "Team", icon: Users },
   { href: "#", label: "Settings", icon: Settings },
 ]
 

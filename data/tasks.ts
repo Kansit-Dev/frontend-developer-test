@@ -1,11 +1,11 @@
 import type { Task, Assignee } from "@/types/task"
 
 export const assignees: Assignee[] = [
-  { id: "1", name: "John Doe", avatar: "https://i.pravatar.cc/150?u=john" },
-  { id: "2", name: "Jane Smith", avatar: "https://i.pravatar.cc/150?u=jane" },
-  { id: "3", name: "Bob Johnson", avatar: "https://i.pravatar.cc/150?u=bob" },
-  { id: "4", name: "Alice Brown", avatar: "https://i.pravatar.cc/150?u=alice" },
-  { id: "5", name: "Charlie Wilson", avatar: "https://i.pravatar.cc/150?u=charlie" },
+  { id: "1", name: "John Doe", avatar: "https://i.pravatar.cc/150?u=john", email: "john.doe@example.com", role: "Frontend Developer" },
+  { id: "2", name: "Jane Smith", avatar: "https://i.pravatar.cc/150?u=jane", email: "jane.smith@example.com", role: "Backend Developer" },
+  { id: "3", name: "Bob Johnson", avatar: "https://i.pravatar.cc/150?u=bob", email: "bob.j@example.com", role: "Product Manager" },
+  { id: "4", name: "Alice Brown", avatar: "https://i.pravatar.cc/150?u=alice", email: "alice.b@example.com", role: "UX Designer" },
+  { id: "5", name: "Charlie Wilson", avatar: "https://i.pravatar.cc/150?u=charlie", email: "charlie.w@example.com", role: "QA Engineer" },
 ]
 
 export const mockTasks: Task[] = [
