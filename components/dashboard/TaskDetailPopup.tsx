@@ -244,7 +244,14 @@ export function TaskDetailPopup({
               ) : (
                 <Select
                   value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value as Status })}
+                  onValueChange={(value) => {
+                    const status = value as Status
+                    let progress = formData.progress || 0
+                    if (status === "todo") progress = 0
+                    else if (status === "done") progress = 100
+                    else if (progress === 0 || progress === 100) progress = 50 // Default to 50% if moving to in-progress from ends
+                    setFormData({ ...formData, status, progress })
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -297,7 +304,14 @@ export function TaskDetailPopup({
             ) : (
               <Slider
                 value={[formData.progress || 0]}
-                onValueChange={(value) => setFormData({ ...formData, progress: value[0] })}
+                onValueChange={(value) => {
+                  const progress = value[0]
+                  let status = formData.status
+                  if (progress === 0) status = "todo"
+                  else if (progress === 100) status = "done"
+                  else status = "in-progress"
+                  setFormData({ ...formData, progress, status: status as Status })
+                }}
                 max={100}
                 step={5}
               />
